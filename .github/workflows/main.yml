@@ -26,9 +26,14 @@ jobs:
           
       - name: Deploy and Verify Contracts
         id: deploy
-        run: npm run deploy -- --network mumbai --verify true
-        env:
-          CONTRACT_ADDRESS: ${{ steps.deploy.outputs.contract_address }}
+        run: npm run deploy -- --network mumbai --verify true > deploy_output.txt
+
+      - name: Parse deploy output
+        id: parse_output
+        run: |
+          OUTPUT=$(cat deploy_output.txt)
+          # Parse the output as needed and set desired environment variables or use the output in subsequent steps
+          echo "Parsed output: $OUTPUT"
 
       - name: Create, Fund, and Authorize Subscription
         run: npm run create-sub -- --network mumbai --amount 5 --contract ${{ env.CONTRACT_ADDRESS }}
