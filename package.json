@@ -44,6 +44,12 @@
     "solidity-coverage": "^0.8.2",
     "typechain": "^8.1.0"
   },
+  "scripts": {
+  "deploy": "hardhat functions-deploy-client",
+  "create-sub": "hardhat functions-sub-create",
+  "resend-requests": "hardhat functions-request"
+},
+
   "dependencies": {
     "@chainlink/env-enc": "^1.0.5",
     "@openzeppelin/contracts": "4.8.1",
