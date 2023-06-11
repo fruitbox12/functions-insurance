@@ -16,9 +16,7 @@ let POLYGON_MAINNET_RPC_URL = process.env.MUMBAI_RPC_URL
 
 // Set EVM private key (required)
 const PRIVATE_KEY = process.env.PRIVATE_KEY
-if (!isTestEnvironment && !PRIVATE_KEY) {
-  throw Error("Set the PRIVATE_KEY environment variable with your EVM wallet private key")
-}
+
 
 // Set a specific block number to fork (optional)
 const FORKING_BLOCK_NUMBER = isNaN(process.env.FORKING_BLOCK_NUMBER)
