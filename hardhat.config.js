@@ -13,7 +13,7 @@ let MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL
 let POLYGON_MAINNET_RPC_URL = process.env.MUMBAI_RPC_URL
 
 // Ensure one of the RPC endpoints has been set
-if (!isTestEnvironment && !POLYGON_MAINNET_RPC_URL && !MUMBAI_RPC_URL && !SEPOLIA_RPC_URL) {
+if (!isTestEnvironment && !POLYGON_MAINNET_RPC_URL && !MUMBAI_RPC_URL) {
   throw Error(
     "One of the following environment variables must be set: MAINNET_RPC_URL, SEPOLIA_RPC_URL, POLYGON_MAINNET_RPC_URL, or MUMBAI_RPC_URL"
   )
