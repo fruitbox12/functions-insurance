@@ -20,7 +20,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
           
       - name: Deploy and Verify Contracts
         id: deploy
