@@ -26,21 +26,20 @@ jobs:
           
       - name: Deploy and Verify Contracts
         id: deploy
-        run: npm run deploy -- --network mumbai --verify true > deploy_output.txt
+        run: | 
+            npm run deploy
+            CONTRACT_ADDRESS=$(npx hardhat run scripts/deploy.js --network ropsten | grep "Contract address:" | awk '{print $3}')
+            echo "::set-output name=contract-address::$CONTRACT_ADDRESS"
 
-      - name: Parse deploy output
-        id: parse_output
-        run: |
-          OUTPUT=$(cat deploy_output.txt)
-          # Parse the output as needed and set desired environment variables or use the output in subsequent steps
-          echo "Parsed output: $OUTPUT"
 
       - name: Create, Fund, and Authorize Subscription
-        run: npm run create-sub -- --network mumbai --amount 5 --contract ${{ env.CONTRACT_ADDRESS }}
+        run: |
+              SUBSCRIPTION_ID=$(npm run create-sub -- --network mumbai --amount 5 --contract ${{ steps.deploy.outputs.contract-address }}")
+              echo "::set-output name=subscription-id::$SUBSCRIPTION_ID"
 
     
       - name: Resend On-Chain Requests
-        run: npm run resend-requests -- --network mumbai --contract ${{ env.CONTRACT_ADDRESS }} --subid ${{ env.SUBSCRIPTION_ID }}
+        run: npm run resend-requests -- --network mumbai --contract ${{ steps.deploy.outputs.contract-address }}" --subid ${{ steps.deploy.outputs.subscription-id }}
 
 
       - name: Complete Deployment
