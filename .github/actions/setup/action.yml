@@ -16,23 +16,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Set up Environment Variables
-        env:
-          PASSWORD: ${{ secrets.PASSWORD }}
-        run: |
-          echo "$PASSWORD" | npx env-enc set-pw
-          echo "$PASSWORD" | npx env-enc set
-
-      - name: Decrypt Environment Variables
-        env:
-          PASSWORD: ${{ secrets.PASSWORD }}
-        run: |
-          echo "$PASSWORD" | npx env-enc view > .env
           
       - name: Deploy and Verify Contracts
         id: deploy
