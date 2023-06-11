@@ -12,12 +12,7 @@ const isTestEnvironment = npmCommand == "test" || npmCommand == "test:unit"
 let MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL
 let POLYGON_MAINNET_RPC_URL = process.env.MUMBAI_RPC_URL
 
-// Ensure one of the RPC endpoints has been set
-if (!isTestEnvironment && !POLYGON_MAINNET_RPC_URL && !MUMBAI_RPC_URL) {
-  throw Error(
-    "One of the following environment variables must be set: MAINNET_RPC_URL, SEPOLIA_RPC_URL, POLYGON_MAINNET_RPC_URL, or MUMBAI_RPC_URL"
-  )
-}
+
 
 // Set EVM private key (required)
 const PRIVATE_KEY = process.env.PRIVATE_KEY
@@ -95,7 +90,7 @@ module.exports = {
     // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
     apiKey: {
       mainnet: ETHERSCAN_API_KEY,
-      polygon: POLYGONSCAN_API_KEY,
+      polygon: "6KNF7Y25Q8YYRQ53QRFBGT9K2MDXBD8WZM",
       sepolia: ETHERSCAN_API_KEY,
       polygonMumbai: POLYGONSCAN_API_KEY,
     },
