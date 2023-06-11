@@ -39,7 +39,7 @@ const SOLC_SETTINGS = {
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "mumbai",
   solidity: {
     compilers: [
       {
