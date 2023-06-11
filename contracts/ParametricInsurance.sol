@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-// import "./dev/functions/FunctionsClient.sol";
 import {Functions, FunctionsClient} from "./dev/functions/FunctionsClient.sol";
 
-contract ParametricInsurance is FunctionsClient {
+contract GoalBasedReward is FunctionsClient {
   using Functions for Functions.Request;
 
   bytes32 public latestRequestId;
@@ -12,58 +11,39 @@ contract ParametricInsurance is FunctionsClient {
   bytes public latestError;
   event OCRResponse(bytes32 indexed requestId, bytes result, bytes err);
 
-  // Number of consecutive days with temperature below threshold
-  uint256 public constant COLD_DAYS_THRESHOLD = 3;
-
-  // Number of seconds in a day. 60 for testing, 86400 for Production
-  uint256 public constant DAY_IN_SECONDS = 60;
-
   address public insurer;
-
-  // address of client is immutable and can only be assigned in constructor
   address public immutable client;
 
   // Check if the contract active or end
   bool public contractActive;
 
-  // Check if the contract should pay to client
-  bool public shouldPayClient;
+  // Check if the client has reached the goal
+  bool public goalReached;
 
-  // how many days with cold weather in a row
-  uint256 public consecutiveColdDays = 0;
+  // Staked amount by insurer
+  uint256 public stakedAmount;
 
-  // the temperature below threshold is considered as cold(in Fahrenheit)
-  uint256 public coldTemp = 60;
+  // Goal to be reached
+  uint256 public goal;
 
-  // current temperature for the location
-  uint256 public currentTemperature;
+  // Current progress towards the goal
+  uint256 public currentProgress;
 
-  //when the last temperature check was performed
-  uint256 public currentTempDateChecked;
-
-  constructor(address oracle, address _client) payable FunctionsClient(oracle) {
+  constructor(address oracle, address _client, uint256 _goal) payable FunctionsClient(oracle) {
     insurer = msg.sender;
     client = _client;
-    shouldPayClient = false;
-    currentTempDateChecked = block.timestamp;
+    goalReached = false;
     contractActive = true;
-    currentTemperature = 0;
+    goal = _goal;
+    currentProgress = 0;
   }
 
   /**
-   * @dev Prevents a data request to be called unless it's been a day since the last call (to avoid spamming and spoofing results)
+   * @notice Stake ether in the contract
    */
-  modifier callFrequencyOncePerDay() {
-    require((block.timestamp - currentTempDateChecked) > DAY_IN_SECONDS, "One check per day");
-    _;
-  }
-
-  /**
-   * @dev Prevents a function being run unless contract is still active
-   */
-  modifier onContractActive() {
-    require(contractActive == true, "Contract has ended");
-    _;
+  function stake() public payable {
+    require(msg.sender == insurer, "Only insurer can stake");
+    stakedAmount += msg.value;
   }
 
   /**
@@ -79,7 +59,8 @@ contract ParametricInsurance is FunctionsClient {
     string[] calldata args,
     uint64 subscriptionId,
     uint32 gasLimit
-  ) public callFrequencyOncePerDay onContractActive returns (bytes32) {
+  ) public returns (bytes32) {
+    require(contractActive, "Contract has ended");
     Functions.Request memory req;
     req.initializeRequest(Functions.Location.Inline, Functions.CodeLanguage.JavaScript, source);
     if (secrets.length > 0) {
@@ -104,30 +85,23 @@ contract ParametricInsurance is FunctionsClient {
     latestResponse = response;
     latestError = err;
     emit OCRResponse(requestId, response, err);
-    // once callback happens, mark the timestamp
-    currentTempDateChecked = block.timestamp;
-    currentTemperature = uint256(bytes32(response));
 
-    // if current temperature is under temperature which considered as cold, number of cold days inrement
-    if (currentTemperature > coldTemp) {
-      consecutiveColdDays = 0;
-    } else {
-      consecutiveColdDays += 1;
-    }
+    currentProgress = uint256(bytes32(response));
 
     // pay the client and shut down the contract
-    if (consecutiveColdDays >= COLD_DAYS_THRESHOLD) {
+    if (currentProgress >= goal) {
       payoutContract();
     }
   }
 
   /**
-   * @dev Insurance conditions have been met, do payout of total cover amount to client
+   * @dev Goal conditions have been met, do payout of total staked amount to client
    */
-  function payoutContract() internal onContractActive {
-    (bool sent /*bytes memory data*/, ) = client.call{value: address(this).balance}("");
+  function payoutContract() internal {
+    require(contractActive, "Contract has ended");
+    (bool sent /*bytes memory data*/, ) = client.call{value: stakedAmount}("");
     contractActive = !sent;
-    shouldPayClient = sent;
+    goalReached = sent;
   }
 
   /**
