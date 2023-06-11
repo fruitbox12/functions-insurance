@@ -30,9 +30,7 @@ jobs:
       - name: Create, Fund, and Authorize Subscription
         run: npm run create-sub -- --network mumbai --amount ${{ env.LINK_FUNDING_AMOUNT }} --contract ${{ env.CONTRACT_ADDRESS }}
 
-      - name: Transfer Tokens
-        # TODO: Add step to transfer tokens (e.g., using MetaMask)
-
+    
       - name: Resend On-Chain Requests
         run: npm run resend-requests -- --network mumbai --contract ${{ env.CONTRACT_ADDRESS }} --subid ${{ env.SUBSCRIPTION_ID }}
 
