@@ -3,7 +3,7 @@ pragma solidity ^0.8.7;
 
 import {Functions, FunctionsClient} from "./dev/functions/FunctionsClient.sol";
 
-contract GoalBasedReward is FunctionsClient {
+contract ParameticInsurance is FunctionsClient {
   using Functions for Functions.Request;
 
   bytes32 public latestRequestId;
