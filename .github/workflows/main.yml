@@ -28,7 +28,7 @@ jobs:
           CONTRACT_ADDRESS: ${{ steps.deploy.outputs.contract_address }}
 
       - name: Create, Fund, and Authorize Subscription
-        run: npm run create-sub -- --network mumbai --amount ${{ env.LINK_FUNDING_AMOUNT }} --contract ${{ env.CONTRACT_ADDRESS }}
+        run: npm run create-sub -- --network mumbai --amount 5 --contract ${{ env.CONTRACT_ADDRESS }}
 
     
       - name: Resend On-Chain Requests
