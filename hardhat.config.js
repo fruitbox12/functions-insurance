@@ -10,6 +10,7 @@ const isTestEnvironment = npmCommand == "test" || npmCommand == "test:unit"
 // Set one of the following RPC endpoints (required)
 
 let MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL
+let MAINNET_RPC_URL = process.env.MUMBAI_RPC_URL
 
 // Ensure one of the RPC endpoints has been set
 if (!isTestEnvironment && !MAINNET_RPC_URL && !POLYGON_MAINNET_RPC_URL && !MUMBAI_RPC_URL && !SEPOLIA_RPC_URL) {
