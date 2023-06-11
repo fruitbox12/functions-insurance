@@ -27,8 +27,7 @@ jobs:
       - name: Deploy and Verify Contracts
         id: deploy
         run: | 
-            npm run deploy
-            CONTRACT_ADDRESS=$(npx hardhat run scripts/deploy.js --network ropsten | grep "Contract address:" | awk '{print $3}')
+            CONTRACT_ADDRESS=$(npm run deploy | grep "Contract address:" | awk '{print $3}')
             echo "::set-output name=contract-address::$CONTRACT_ADDRESS"
 
 
