@@ -33,21 +33,22 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
         run: |
           echo "$PASSWORD" | npx env-enc view > .env
-
+          
       - name: Deploy and Verify Contracts
+        id: deploy
         run: npm run deploy -- --network mumbai --verify true
+        env:
+          CONTRACT_ADDRESS: ${{ steps.deploy.outputs.contract_address }}
 
       - name: Create, Fund, and Authorize Subscription
-        run: npm run create-sub -- --network mumbai --amount <LINK_funding_amount> --contract <deployed_client_contract_address>
+        run: npm run create-sub -- --network mumbai --amount ${{ env.LINK_FUNDING_AMOUNT }} --contract ${{ env.CONTRACT_ADDRESS }}
 
       - name: Transfer Tokens
         # TODO: Add step to transfer tokens (e.g., using MetaMask)
 
       - name: Resend On-Chain Requests
-        run: npm run resend-requests -- --network mumbai --contract <deployed_client_contract_address> --subid <subscription_id>
+        run: npm run resend-requests -- --network mumbai --contract ${{ env.CONTRACT_ADDRESS }} --subid ${{ env.SUBSCRIPTION_ID }}
 
-      - name: Check Client Balance
-        # TODO: Add step to verify client balance
 
       - name: Complete Deployment
         run: echo "Deployment completed"
